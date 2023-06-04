@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.leadmevr.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "C:\\Users\\ecoad\\Projects\\Unity\\LeadMe VR\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "action_manifest_path": "C:\\Users\\ecoad\\Projects\\LeadMeLab\\LeadMeLabs-VR-Video-Player\\Assets\\StreamingAssets\\SteamVR\\actions.json",
       "strings": {
         "en_us": {
           "name": "LeadMe VR [Testing]"

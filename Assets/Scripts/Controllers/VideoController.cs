@@ -223,11 +223,13 @@ namespace LeadMe
             if (Initialisation.localFiles.TryGetValue(textValue, out localFile))
             {
                 Debug.Log($"{textValue} value: {localFile.filePath}");
+                PipeController.CurrentVideo = "";
                 LoadFirstFrame(localFile.filePath);
             }
             else if (FileController.localFiles.TryGetValue(textValue, out localFile))
             {
                 Debug.Log($"{textValue} value: {localFile.filePath}");
+                PipeController.CurrentVideo = "";
                 LoadFirstFrame(localFile.filePath);
             }
             else
@@ -242,10 +244,11 @@ namespace LeadMe
         /// <param name="path">A string URL pointing to the location of the new source.</param>
         private async void LoadFirstFrame(string path)
         {
+            SetVideoSource(path);
+
             //Check for the void
             CheckForSkybox();
 
-            SetVideoSource(path);
             PlayVideo();
 
             //TODO should it actually pause after?
@@ -276,6 +279,12 @@ namespace LeadMe
         public void StopVideo()
         {
             videoPlayer.Stop();
+            PipeController.CurrentVideo = "";
+            videoPlayer.url = "";
+
+            //Reset the current video time text back to 0
+            currentTimeText.GetComponent<Text>().text = "0:00";
+
             SetDefaultSkyboxOrVoid(isVoidOn);
         }
 
@@ -489,7 +498,7 @@ namespace LeadMe
                 string skyboxName = skyboxMaterial.name;
                 Debug.Log("Skybox Material Name: " + skyboxName);
 
-                if(skyboxName.Equals("Void"))
+                if(skyboxName.Equals("Void") || skyboxName.Equals("6sidedCosmicCoolCloud"))
                 {
                     ChangeProjection("MONO");
                 }
