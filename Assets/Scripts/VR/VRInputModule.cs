@@ -11,7 +11,7 @@ public class VRInputModule : BaseInputModule
 
     [Header("Input Management")]
     public SteamVR_Input_Sources m_RightTargetSource;
-    public SteamVR_Input_Sources m_LefttTargetSource;
+    public SteamVR_Input_Sources m_LeftTargetSource;
     public SteamVR_Action_Boolean m_RightTriggerAction;
     public SteamVR_Action_Boolean m_LeftTriggerAction;
 
@@ -63,7 +63,7 @@ public class VRInputModule : BaseInputModule
         }
 
         // Show/Hide Menu and Line renderer only on release
-        if (m_LeftTriggerAction.GetStateUp(m_LefttTargetSource))
+        if (m_LeftTriggerAction.GetStateUp(m_LeftTargetSource))
         {
             ManageMenuVisibility();
         }

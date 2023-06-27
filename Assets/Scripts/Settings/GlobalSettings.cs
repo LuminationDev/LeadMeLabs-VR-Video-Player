@@ -30,5 +30,13 @@ namespace LeadMe
         {
             return settings["isRepeatOn"];
         }
+
+        /// <summary>
+        /// Hold the current video variables, tracks what URL is playing and
+        /// what time it is currently at. This will handle the video loading when switching between
+        /// different scenes.
+        /// </summary>
+        public static string CurrentUrl { get; set; } = "";
+        public static double CurrentTime { get; set; } = 0;
     }
 }

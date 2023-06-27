@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 using UnityEngine.UI;
 using UnityEngine;
+using System;
 
 namespace LeadMe
 {
@@ -14,7 +15,6 @@ namespace LeadMe
     {
         // Menu Management
         [Header("Menu Management")]
-        public GameObject menuPointer;
         public GameObject scenePopup;
         public GameObject projectionTrigger;
         public GameObject projectionPopup;
@@ -74,12 +74,23 @@ namespace LeadMe
         /// </summary>
         public void CloseMenuOnSourceSelection()
         {
-            menuPointer.SetActive(false);
-            CanvasGroup menu = gameObject.GetComponent<CanvasGroup>();
+            // Need to manually find the GameObjects as the OnClick is coming from an instantiated prefab
+            try
+            {
+                GameObject menuPointer = GameObject.Find("PR_Pointer");
+                menuPointer.SetActive(false);
 
-            menu.alpha = 0;
-            menu.interactable = false;
-            menu.blocksRaycasts = false;
+                GameObject mainMenu = GameObject.Find("Menu");
+                CanvasGroup menu = mainMenu.GetComponent<CanvasGroup>();
+
+                menu.alpha = 0;
+                menu.interactable = false;
+                menu.blocksRaycasts = false;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Cannot close menu: " + ex);
+            }
         }
     }
 }

@@ -32,8 +32,8 @@ namespace LeadMe
         private static double TIME_INTERVAL = 5.0;
 
         // Current settings values
-        private bool isRepeatOn = false;
-        private bool isVoidOn = false;
+        private bool isRepeatOn;
+        private bool isVoidOn;
 
         void Start()
         {
@@ -46,7 +46,20 @@ namespace LeadMe
             UpdateVideoSettings();
             UpdateProjectSettings();
 
-            if(!videoPlayer.isPlaying && videoPlayer.url != null)
+            //Read the global url settings
+            if (!string.IsNullOrEmpty(GlobalSettings.CurrentUrl))
+            {
+                SetVideoSource((string)GlobalSettings.CurrentUrl);
+
+                //TODO this is not working, or video time is being reset afterwards somewhere
+                SetCurrentTime((double)GlobalSettings.CurrentTime);
+
+                //Check for the void
+                CheckForSkybox();
+
+                PlayVideo();
+            }
+            else if (!videoPlayer.isPlaying && !string.IsNullOrEmpty(videoPlayer.url))
             {
                 LoadFirstFrame(videoPlayer.url);
             }
@@ -57,6 +70,7 @@ namespace LeadMe
         void OnDestroy()
         {
             videoPlayer.errorReceived -= OnVideoErrorReceived;
+            StopCoroutine(CheckProjectSettings());
         }
 
         /// <summary>
@@ -68,6 +82,8 @@ namespace LeadMe
         {
             Debug.LogError($"Video player encountered an error for source: {source}; error: {message}");
             PipeController.CurrentVideo = null;
+            GlobalSettings.CurrentUrl = "";
+            GlobalSettings.CurrentTime = 0;
         }
 
         /// <summary>
@@ -101,11 +117,21 @@ namespace LeadMe
                 videoPlayer.url = PipeController.CurrentVideo;
                 videoPlayer.Prepare();
                 videoPlayer.prepareCompleted += OnVideoPrepareCompleted;
+
+                //Update global url settings
+                GlobalSettings.CurrentUrl = videoPlayer.url;
+                GlobalSettings.CurrentTime = 0;
+
+                //Clear the PipeController variable
+                PipeController.CurrentVideo = "";
             }
 
             if (LatestProjectionType != PipeController.CurrentProjection && !string.IsNullOrEmpty(PipeController.CurrentProjection))
             {
                 ChangeProjection(PipeController.CurrentProjection);
+
+                //Clear the PipeController variable
+                PipeController.CurrentProjection = "";
             }
         }
 
@@ -137,6 +163,9 @@ namespace LeadMe
         {
             if (videoPlayer.length == 0) return;
 
+            //Update the global settings
+            GlobalSettings.CurrentTime = GetCurrentTime();
+            
             //Update the current time text and end time incase the source has changed
             currentTimeText.GetComponent<Text>().text = ConvertTimeToString(GetCurrentTime());
             endTimeText.GetComponent<Text>().text = ConvertTimeToString(GetTotalTime());
@@ -195,12 +224,7 @@ namespace LeadMe
             if (isVoidOn != newVoid)
             {
                 isVoidOn = newVoid;
-
-                //Change the projection type if on flatscreen
-                if (SceneManager.GetActiveScene().name.Equals("FlatScreen") || string.IsNullOrEmpty(videoPlayer.url))
-                {
-                    SetDefaultSkyboxOrVoid(isVoidOn);
-                }
+                SetDefaultSkyboxOrVoid(isVoidOn);
             }
 
             bool newRepeat = GlobalSettings.GetRepeatStatus();
@@ -235,14 +259,19 @@ namespace LeadMe
             else
             {
                 Debug.Log($"{textValue} not found in dictionary");
+                return;
             }
+
+            //TODO update global url settings
+            GlobalSettings.CurrentUrl = localFile.filePath;
+            GlobalSettings.CurrentTime = 0;
         }
 
         /// <summary>
         /// Load and then play the video for a little bit so that the first frame appears.
         /// </summary>
         /// <param name="path">A string URL pointing to the location of the new source.</param>
-        private async void LoadFirstFrame(string path)
+        private void LoadFirstFrame(string path)
         {
             SetVideoSource(path);
 
@@ -250,10 +279,6 @@ namespace LeadMe
             CheckForSkybox();
 
             PlayVideo();
-
-            //TODO should it actually pause after?
-            await Task.Delay(500);
-            PauseVideo();
         }
 
         /// <summary>
@@ -281,6 +306,8 @@ namespace LeadMe
             videoPlayer.Stop();
             PipeController.CurrentVideo = "";
             videoPlayer.url = "";
+            GlobalSettings.CurrentUrl = "";
+            GlobalSettings.CurrentTime = 0;
 
             //Reset the current video time text back to 0
             currentTimeText.GetComponent<Text>().text = "0:00";
@@ -369,7 +396,8 @@ namespace LeadMe
             LatestProjectionType = projectionType;
 
             bool isVRMode360 = SceneManager.GetActiveScene().name.Equals("VR360");
-            ChangeRenderTexture(projectionType == "MONO", isVRMode360);
+            bool isVRMode180 = SceneManager.GetActiveScene().name.Equals("VR180");
+            ChangeRenderTexture(projectionType == "MONO", isVRMode360, isVRMode180);
 
             switch (projectionType)
             {
@@ -469,10 +497,11 @@ namespace LeadMe
         /// difference is the resolution that a video takes up whilst wrapped on the skybox.
         /// </summary>
         /// <param name="isMono">A bool representing the if the projection type is mono</param>
-        /// <param name="is360">A bool representing the if the scene type is 360 degree or 180 degree</param>
-        public void ChangeRenderTexture(bool isMono, bool is360)
+        /// <param name="is360">A bool representing the if the scene type is 360 degree</param>
+        /// <param name="is180">A bool representing the if the scene type is 180 degree</param>
+        public void ChangeRenderTexture(bool isMono, bool is360, bool is180)
         {
-            if(isMono)
+            if(isMono && !is180)
             {
                 videoPlayer.targetTexture = (RenderTexture)Resources.Load("Renderers/MonoRenderTexture") as RenderTexture;
             } else if(is360)

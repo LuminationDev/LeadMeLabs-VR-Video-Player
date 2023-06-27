@@ -63,7 +63,7 @@ MonoBehaviour:
   m_SendPointerHoverToParent: 1
   m_Camera: {fileID: 6152757640081844232}
   m_RightTargetSource: 2
-  m_LefttTargetSource: 1
+  m_LeftTargetSource: 1
   m_RightTriggerAction:
     actionPath: /actions/default/in/GrabPinch
     needsReinit: 0
@@ -2012,6 +2012,16 @@ PrefabInstance:
       propertyPath: m_Alpha
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4335919820331476774, guid: 49d741227997d4b4fb20f228811823d8,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4335919820331476774, guid: 49d741227997d4b4fb20f228811823d8,
+        type: 3}
+      propertyPath: m_BlocksRaycasts
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4957435961060862437, guid: 49d741227997d4b4fb20f228811823d8,
         type: 3}
       propertyPath: m_SizeDelta.y
@@ -2038,6 +2048,11 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 6152757640081844232}
+    - target: {fileID: 6781833135551413216, guid: 49d741227997d4b4fb20f228811823d8,
+        type: 3}
+      propertyPath: menuPointer
+      value: 
+      objectReference: {fileID: 6152757640081844246}
     - target: {fileID: 7636643662383984938, guid: 49d741227997d4b4fb20f228811823d8,
         type: 3}
       propertyPath: m_IsActive

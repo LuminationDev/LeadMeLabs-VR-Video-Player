@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace LeadMe
         public GameObject backstepButton;
         public GameObject currentFolderText;
 
+        //private string currentFolderPath = @"Z:\Development Team\LeadMe Labs\testing_videos";
         private string currentFolderPath = @"C:\Users";
 
         //List of the valid file types to try and load
@@ -25,6 +27,11 @@ namespace LeadMe
 
         public static Dictionary<string, LocalFile> localFiles = new();
         public List<string> localDirectories = new();
+
+        void OnEnable()
+        {
+            currentFolderPath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\videos";
+        }
 
         // Start is called before the first frame update
         void Start()

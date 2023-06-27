@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using leadme_api;
+using Action = leadme_api.Action;
 
 namespace LeadMe
 {
@@ -18,7 +20,8 @@ namespace LeadMe
         private static List<string> ValidFileTypes = new List<string> { ".mp4" };
 
         //Path to the specialised LeadMe video folder
-        public static string folderPath = @"C:\Users\ecoad\Videos\Test"; //TODO replace with the specialised LeadMe video folder
+        //public static string folderPath = @"Z:\Development Team\LeadMe Labs\testing_videos"; //TODO replace with the specialised LeadMe video folder
+        public static string folderPath; //= @"C:\Users\ecoad\videos"; //TODO replace with the specialised LeadMe video folder
         public static Dictionary<string, LocalFile> localFiles = new();
 
         // A reference to any arguments supplied to the program
@@ -27,6 +30,9 @@ namespace LeadMe
         [RuntimeInitializeOnLoadMethod]
         static void OnRuntimeMethodLoad()
         {
+            // Load the local videos directory
+            folderPath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\videos";
+
             Debug.Log("After Scene is loaded and game is running look for command line arguments");
             ReadCommandLine();
             LoadLeadMeFiles();
@@ -82,18 +88,21 @@ namespace LeadMe
         /// </summary>
         private static async void LoadLeadMeFiles()
         {
-            string[] files = Directory.GetFiles(folderPath);
-
-            foreach (string filePath in files)
+            if (File.Exists(folderPath))
             {
-                string fileName = Path.GetFileName(filePath);
-                if(!localFiles.ContainsKey(fileName) && ValidFileTypes.Contains(Path.GetExtension(filePath)))
-                {
-                    LocalFile temp = new LocalFile(fileName, filePath);
-                    localFiles.Add(fileName, temp);
+                string[] files = Directory.GetFiles(folderPath);
 
-                    // Add to the details being sent to LeadMe
-                    details.levels[3].actions.Add(new Action { name = fileName, trigger = $"Source,file://{filePath}" });
+                foreach (string filePath in files)
+                {
+                    string fileName = Path.GetFileName(filePath);
+                    if (!localFiles.ContainsKey(fileName) && ValidFileTypes.Contains(Path.GetExtension(filePath)))
+                    {
+                        LocalFile temp = new LocalFile(fileName, filePath);
+                        localFiles.Add(fileName, temp);
+
+                        // Add to the details being sent to LeadMe
+                        details.levels[3].actions.Add(new Action { name = fileName, trigger = $"Source,file://{filePath}" });
+                    }
                 }
             }
 
@@ -103,10 +112,10 @@ namespace LeadMe
             //Wait for the initial loading screen to finish
             await Task.Delay(3000);
 
-            //Move to the Flat Screen scene if still on the Entry
+            //Move to the VR360 scene if still on the Entry
             if (SceneManager.GetActiveScene().name == "Entry")
             {
-                SceneManager.LoadScene("FlatScreen");
+                SceneManager.LoadScene("VR360");
             }
         }
 

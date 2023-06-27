@@ -584,7 +584,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 339cef381b6ecd64db24b685fc476525, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuPointer: {fileID: 0}
   scenePopup: {fileID: 2456309172140926756}
   projectionTrigger: {fileID: 2456309172839024185}
   projectionPopup: {fileID: 2456309171980713839}
@@ -652,8 +651,8 @@ CanvasGroup:
   m_GameObject: {fileID: 2456309171956154436}
   m_Enabled: 1
   m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!1 &2456309171980713839
 GameObject:
@@ -2436,7 +2435,7 @@ MonoBehaviour:
     rgba: 4294967295
   m_HoverColor:
     serializedVersion: 2
-    rgba: 4286611584
+    rgba: 4294967295
   m_DownColor:
     serializedVersion: 2
     rgba: 4294967295
